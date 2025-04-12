@@ -11,6 +11,9 @@ Node.js CLI tool for local text classification using word embeddings.
 
 > Ideal for local NLP classification workflows.
 
+## Acknowledgments
+- This project was developed with the help of AI tools (e.g., GitHub Copilot, Cursor) for code suggestions, debugging, and optimizations.
+
 ## 📦 Dependencies
 
 Install with:
