@@ -4,12 +4,6 @@ const { program } = require('commander');
 const csvEmbedding = require('./commands/csv-embedding');
 const embeddingClassification = require('./commands/embedding-classification');
 
-// Utility function for handling errors
-function handleError(err) {
-  logger.error(err);
-  process.exit(1);
-}
-
 program
   .command('csv-embedding')
   .description('Create embedding JSON from CSV')

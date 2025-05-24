@@ -63,7 +63,7 @@ const batchSanitize = (texts) => {
   return texts.map((text, index) => {
     try {
       return sanitizeText(text);
-    } catch (error) {
+    } catch {
       logger.error(`Failed to sanitize text at index ${index}`);
       return text;
     }

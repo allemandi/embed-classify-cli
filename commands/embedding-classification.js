@@ -74,7 +74,7 @@ const embeddingClassification = async (
             similarityThresholdPercent
           );
           const predictedCategory = resolveBestCategory(searchResults, weightedVotes) || '???';
-          const confidence = searchResults[0]?.score || 0;
+          const confidence = searchResults[0]?.similarity || 0;
 
           return {
             text: item.text,
@@ -135,8 +135,8 @@ const embeddingClassification = async (
           similarityThresholdPercent
         );
         const predictedCategory = resolveBestCategory(searchResults, weightedVotes) || '???';
-        const nearestCosineScore = searchResults[0]?.score || 0;
-
+        const nearestCosineScore = searchResults[0]?.similarity || 0;
+      
         return {
           text: sanitizedText,
           category: predictedCategory,
@@ -171,7 +171,7 @@ const embeddingClassification = async (
 
   try {
     await fs.promises.writeFile(outputFile, outputString);
-    logger.info(`\nResults have been written to ${outputFile}`);
+    logger.info(`Results have been written to ${outputFile}`);
   } catch (err) {
     logger.error(`Failed to write output file: ${err.message}`);
     throw err;

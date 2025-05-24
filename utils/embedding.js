@@ -1,7 +1,6 @@
-const csv = require('csvtojson');
-const path = require('path');
 const { pipeline } = require('@xenova/transformers');
 const logger = require('./logger');
+const { findClosest } = require('@allemandi/embed-utils');
 
 const createEmbeddings = async (textArr) => {
   if (!Array.isArray(textArr) || textArr.length === 0) {
@@ -61,38 +60,12 @@ const rankSamplesBySimilarity = async (
       logger.error('No valid embedding generated for search query');
       return [];
     }
-
     const queryEmbedding = searchQueryResponse[0].embedding;
-
-    // Convert percentage to decimal for comparison
     const similarityThreshold = similarityThresholdPercent / 100;
 
-    // Pre-calculate query embedding magnitude for performance
-    const queryMagnitude = Math.sqrt(
-      queryEmbedding.reduce((sum, val) => sum + val * val, 0)
-    );
-    const rankedSamples = samples
-      .map((sample) => {
-        // Calculate cosine similarity more efficiently
-        const dotProduct = sample.embedding.reduce(
-          (sum, val, i) => sum + val * queryEmbedding[i],
-          0
-        );
-        const sampleMagnitude = Math.sqrt(
-          sample.embedding.reduce((sum, val) => sum + val * val, 0)
-        );
-        const similarity = dotProduct / (sampleMagnitude * queryMagnitude);
+    const closestResults = await findClosest(queryEmbedding, samples, { topK: maxResults, threshold: similarityThreshold});
 
-        return {
-          ...sample,
-          score: similarity,
-        };
-      })
-      .filter((sample) => sample.score > similarityThreshold)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, maxResults);
-
-    return rankedSamples;
+    return closestResults;
   } catch (error) {
     logger.error('Error ranking samples by similarity:', error);
     return [];
