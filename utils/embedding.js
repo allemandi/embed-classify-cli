@@ -1,6 +1,6 @@
 const { pipeline } = require('@xenova/transformers');
 const logger = require('./logger');
-const { findClosest } = require('@allemandi/embed-utils');
+const { findNearestNeighbors } = require('@allemandi/embed-utils');
 
 const createEmbeddings = async (textArr) => {
   if (!Array.isArray(textArr) || textArr.length === 0) {
@@ -63,9 +63,9 @@ const rankSamplesBySimilarity = async (
     const queryEmbedding = searchQueryResponse[0].embedding;
     const similarityThreshold = similarityThresholdPercent / 100;
 
-    const closestResults = await findClosest(queryEmbedding, samples, { topK: maxResults, threshold: similarityThreshold});
+    const nearestNeighbors = await findNearestNeighbors(queryEmbedding, samples, { topK: maxResults, threshold: similarityThreshold});
 
-    return closestResults;
+    return nearestNeighbors;
   } catch (error) {
     logger.error('Error ranking samples by similarity:', error);
     return [];

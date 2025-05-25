@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@allemandi/embed-utils@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@allemandi/embed-utils/-/embed-utils-1.1.0.tgz#989ac829ccf496a5f971fbe49b686314a1782a25"
-  integrity sha512-9LR50gmlNBVttF4mUKUu5EIIUfePKFSO11xNuxzT/lZw5xDXt3S+ogDBJWbgMP7Rb8KS+jcwb22UE3gj3A4JnA==
+"@allemandi/embed-utils@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@allemandi/embed-utils/-/embed-utils-2.1.1.tgz#14042a65fa02cd70c04294faa8741adcba30268c"
+  integrity sha512-yLDGEXAX3/J8rIRZ3R2C6VXCBTutRctVEa6fOnBT2DI0092o1qm6RD4fE2DdPrrwHCdOAS08uaKdDU8UA7A4HA==
 
 "@eslint-community/eslint-utils@^4.2.0":
   version "4.5.1"
