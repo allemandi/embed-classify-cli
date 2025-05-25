@@ -74,7 +74,7 @@ const embeddingClassification = async (
             similarityThresholdPercent
           );
           const predictedCategory = resolveBestCategory(searchResults, weightedVotes) || '???';
-          const confidence = searchResults[0]?.similarity || 0;
+          const confidence = searchResults[0]?.similarityScore || 0;
 
           return {
             text: item.text,
@@ -135,7 +135,7 @@ const embeddingClassification = async (
           similarityThresholdPercent
         );
         const predictedCategory = resolveBestCategory(searchResults, weightedVotes) || '???';
-        const nearestCosineScore = searchResults[0]?.similarity || 0;
+        const nearestCosineScore = searchResults[0]?.similarityScore || 0;
       
         return {
           text: sanitizedText,
