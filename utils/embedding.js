@@ -1,4 +1,4 @@
-const { pipeline } = require('@xenova/transformers');
+const { pipeline } = require('@huggingface/transformers');
 const logger = require('./logger');
 const { findNearestNeighbors } = require('@allemandi/embed-utils');
 
@@ -11,7 +11,8 @@ const createEmbeddings = async (textArr) => {
     if (!createEmbeddings.extractor) {
       createEmbeddings.extractor = await pipeline(
         'feature-extraction',
-        'Xenova/all-MiniLM-L6-v2'
+        'Xenova/all-MiniLM-L6-v2',
+        { dtype: "fp32" }
       );
     }
 
