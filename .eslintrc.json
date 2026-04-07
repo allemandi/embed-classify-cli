@@ -4,6 +4,14 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
+  "overrides": [
+    {
+      "files": ["tests/*.test.js"],
+      "parserOptions": {
+        "sourceType": "module"
+      }
+    }
+  ],
   "env": {
     "node": true,
     "es6": true

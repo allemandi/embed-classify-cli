@@ -16,7 +16,9 @@ const parseCsvToJson = async (filePath) => {
     return jsonArray;
   } catch (error) {
     logger.error(`Failed to parse CSV file: ${error.message}`);
-    throw new Error(`Failed to parse CSV file: ${error.message}`);
+    throw new Error(`Failed to parse CSV file: ${error.message}`, {
+      cause: error,
+    });
   }
 };
 
@@ -69,7 +71,9 @@ const processCsvForEmbedding = async (filePath, categoryColumn, textColumn) => {
     return processedData;
   } catch (error) {
     logger.error(`CSV processing failed: ${error.message}`);
-    throw new Error(`CSV processing failed: ${error.message}`);
+    throw new Error(`CSV processing failed: ${error.message}`, {
+      cause: error,
+    });
   }
 };
 
