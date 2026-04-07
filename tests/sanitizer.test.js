@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { sanitizeText, normalizeWhitespace, standardizeQuotes } from '../utils/sanitizer';
+import {
+  sanitizeText,
+  normalizeWhitespace,
+  standardizeQuotes,
+} from '../utils/sanitizer';
 
 describe('sanitizer utilities', () => {
   it('normalizeWhitespace should trim and reduce internal whitespace', () => {
@@ -8,7 +12,9 @@ describe('sanitizer utilities', () => {
   });
 
   it('standardizeQuotes should convert various quotes to single quotes', () => {
-    expect(standardizeQuotes(' "double" \'single\' "curly" ')).toBe(" 'double' 'single' 'curly' ");
+    expect(standardizeQuotes(' "double" \'single\' "curly" ')).toBe(
+      " 'double' 'single' 'curly' "
+    );
   });
 
   it('sanitizeText should chain operations correctly', () => {

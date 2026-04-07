@@ -11,7 +11,7 @@ describe('stats utilities', () => {
     const predictions = [
       { category: 'apple' },
       { category: 'orange' },
-      { category: 'apple' }
+      { category: 'apple' },
     ];
     expect(resolveBestCategory(predictions)).toBe('apple');
   });
@@ -20,7 +20,7 @@ describe('stats utilities', () => {
     const predictions = [
       { category: 'apple', score: 0.5 },
       { category: 'orange', score: 0.9 },
-      { category: 'apple', score: 0.5 }
+      { category: 'apple', score: 0.5 },
     ];
     expect(resolveBestCategory(predictions, true)).toBe('orange');
   });
@@ -28,12 +28,9 @@ describe('stats utilities', () => {
   it('calculateMetrics should calculate correctly', () => {
     const predictions = [
       { category: 'apple', confidence: 0.8 },
-      { category: 'orange', confidence: 0.6 }
+      { category: 'orange', confidence: 0.6 },
     ];
-    const actuals = [
-      { category: 'apple' },
-      { category: 'apple' }
-    ];
+    const actuals = [{ category: 'apple' }, { category: 'apple' }];
     const metrics = calculateMetrics(predictions, actuals);
     expect(metrics.totalPredictions).toBe(2);
     expect(metrics.correctPredictions).toBe(1);
