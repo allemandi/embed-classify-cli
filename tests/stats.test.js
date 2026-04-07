@@ -1,48 +1,46 @@
-const test = require('node:test');
-const assert = require('node:assert');
-const { resolveBestCategory, calculateMetrics } = require('../utils/stats');
+import { describe, it, expect } from 'vitest';
+import { resolveBestCategory, calculateMetrics } from '../utils/stats';
 
-test('stats utilities', async (t) => {
-  await t.test(
-    'resolveBestCategory should handle empty or invalid input',
-    () => {
-      assert.strictEqual(resolveBestCategory([]), '');
-      assert.strictEqual(resolveBestCategory(null), '');
-    }
-  );
+describe('stats utilities', () => {
+  it('resolveBestCategory should handle empty or invalid input', () => {
+    expect(resolveBestCategory([])).toBe('');
+    expect(resolveBestCategory(null)).toBe('');
+  });
 
-  await t.test('resolveBestCategory should work with majority voting', () => {
+  it('resolveBestCategory should work with majority voting', () => {
     const predictions = [
       { category: 'apple' },
       { category: 'orange' },
-      { category: 'apple' },
+      { category: 'apple' }
     ];
-    assert.strictEqual(resolveBestCategory(predictions), 'apple');
+    expect(resolveBestCategory(predictions)).toBe('apple');
   });
 
-  await t.test('resolveBestCategory should work with weighted voting', () => {
+  it('resolveBestCategory should work with weighted voting', () => {
     const predictions = [
       { category: 'apple', score: 0.5 },
       { category: 'orange', score: 0.9 },
-      { category: 'apple', score: 0.5 },
+      { category: 'apple', score: 0.5 }
     ];
-    // apple avg = 0.5, orange avg = 0.9
-    assert.strictEqual(resolveBestCategory(predictions, true), 'orange');
+    expect(resolveBestCategory(predictions, true)).toBe('orange');
   });
 
-  await t.test('calculateMetrics should calculate correctly', () => {
+  it('calculateMetrics should calculate correctly', () => {
     const predictions = [
       { category: 'apple', confidence: 0.8 },
-      { category: 'orange', confidence: 0.6 },
+      { category: 'orange', confidence: 0.6 }
     ];
-    const actuals = [{ category: 'apple' }, { category: 'apple' }];
+    const actuals = [
+      { category: 'apple' },
+      { category: 'apple' }
+    ];
     const metrics = calculateMetrics(predictions, actuals);
-    assert.strictEqual(metrics.totalPredictions, 2);
-    assert.strictEqual(metrics.correctPredictions, 1);
-    assert.strictEqual(metrics.accuracy, 0.5);
-    assert.strictEqual(metrics.avgConfidence, 0.7);
-    assert.strictEqual(metrics.categoryMetrics.apple.correct, 1);
-    assert.strictEqual(metrics.categoryMetrics.apple.actual, 2);
-    assert.strictEqual(metrics.categoryMetrics.orange.predicted, 1);
+    expect(metrics.totalPredictions).toBe(2);
+    expect(metrics.correctPredictions).toBe(1);
+    expect(metrics.accuracy).toBe(0.5);
+    expect(metrics.avgConfidence).toBe(0.7);
+    expect(metrics.categoryMetrics.apple.correct).toBe(1);
+    expect(metrics.categoryMetrics.apple.actual).toBe(2);
+    expect(metrics.categoryMetrics.orange.predicted).toBe(1);
   });
 });
