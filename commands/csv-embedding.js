@@ -21,13 +21,13 @@ const csvEmbedding = async (inputFile) => {
 
     // More efficient data structuring
     const trainingData = {
-      category: fileData.map(item => item.category),
-      comment: fileData.map(item => item.comment)
+      category: fileData.map((item) => item.category),
+      comment: fileData.map((item) => item.comment),
     };
 
     // Parallel processing of text sanitization
     const cleanedComments = await Promise.all(
-      trainingData.comment.map(text => Promise.resolve(sanitizeText(text)))
+      trainingData.comment.map((text) => Promise.resolve(sanitizeText(text)))
     );
 
     const embeddings = await createEmbeddings(cleanedComments);
@@ -37,7 +37,7 @@ const csvEmbedding = async (inputFile) => {
     }));
 
     await fs.promises.writeFile(
-      'data/embedding.json', 
+      'data/embedding.json',
       JSON.stringify(classifiedEmbeddings, null, 2)
     );
     logger.info(`Successfully wrote to json`);

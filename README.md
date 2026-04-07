@@ -12,6 +12,7 @@ Node.js CLI tool for local text classification using word embeddings.
 > Ideal for local NLP classification workflows.
 
 ## 📦 Getting Started
+
 ```bash
 git clone https://github.com/allemandi/embed-classify-cli.git
 cd embed-classify-cli
@@ -46,7 +47,6 @@ node index.js embedding-classification -i ./data/unclassified.csv -c ./data/embe
 
 > Check configurable flags in `index.js` for more options.
 
-
 ## ⚙️ Configure Classification
 
 Tune classification behavior in `embedding-classification.js` with these params:
@@ -60,9 +60,10 @@ Tune classification behavior in `embedding-classification.js` with these params:
 - `--similarityThresholdPercent`  
   Minimum cosine similarity to include in comparison
 
-
 ## 🔗 Related Projects
+
 Check out these related projects that might interest you:
+
 - **[Embed Classify Web](https://github.com/allemandi/embed-classify-web)**  
   Sleek, modern web app for text classification using embeddings.
 
@@ -72,8 +73,8 @@ Check out these related projects that might interest you:
 - **[Vector Knowledge Base](https://github.com/allemandi/vector-knowledge-base)**  
   A minimalist command-line knowledge system with semantic memory capabilities using vector embeddings for information retrieval.
 
-
 ## 🤝 Contributing
+
 If you have ideas, improvements, or new features:
 
 1. Fork the project
@@ -82,10 +83,9 @@ If you have ideas, improvements, or new features:
 4. Push to the branch (git push origin feature/amazing-feature)
 5. Open a Pull Request
 
-
 ## ☕ Support
-If this project has helped you or saved you time, consider [buying me a coffee](https://www.buymeacoffee.com/allemandi) to help fuel more ideas and improvements!
 
+If this project has helped you or saved you time, consider [buying me a coffee](https://www.buymeacoffee.com/allemandi) to help fuel more ideas and improvements!
 
 ## 💡 Acknowledgments
 

@@ -9,7 +9,8 @@
     "lint": "eslint . --fix",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test": "node --test tests/*.test.js"
   },
   "dependencies": {
     "@allemandi/embed-utils": "^2.7.7",

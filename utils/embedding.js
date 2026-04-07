@@ -12,7 +12,7 @@ const createEmbeddings = async (textArr) => {
       createEmbeddings.extractor = await pipeline(
         'feature-extraction',
         'Xenova/all-MiniLM-L6-v2',
-        { dtype: "fp32" }
+        { dtype: 'fp32' }
       );
     }
 
@@ -64,7 +64,11 @@ const rankSamplesBySimilarity = async (
     const queryEmbedding = searchQueryResponse[0].embedding;
     const similarityThreshold = similarityThresholdPercent / 100;
 
-    const nearestNeighbors = await findNearestNeighbors(queryEmbedding, samples, { topK: maxResults, threshold: similarityThreshold});
+    const nearestNeighbors = await findNearestNeighbors(
+      queryEmbedding,
+      samples,
+      { topK: maxResults, threshold: similarityThreshold }
+    );
 
     return nearestNeighbors;
   } catch (error) {
