@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@allemandi/embed-utils@^2.7.6":
-  version "2.7.6"
-  resolved "https://registry.yarnpkg.com/@allemandi/embed-utils/-/embed-utils-2.7.6.tgz#e8fcd1e5f8216c01c358eedd553600650d3d66ac"
-  integrity sha512-+0/BuwL2FnL8Vf5bbU7pO0qroq0btioifQTD6U60+k1Iuo3fvAm2eszAQJ//A8Lxy7CFSgP8VU0gUfgXccvzyw==
+"@allemandi/embed-utils@^2.7.7":
+  version "2.7.7"
+  resolved "https://registry.yarnpkg.com/@allemandi/embed-utils/-/embed-utils-2.7.7.tgz#ce9ffe676e41eb88d3f33c763d9adf677ef3c1f2"
+  integrity sha512-/DFoABYaG+PAXppwuZ6MNPbugckZ/JiK5dGDsdPXhnNtePQ7kJ7aYGS8nTznJcZZyBNOMjWP6gAh3VlrGEXksg==
 
 "@emnapi/runtime@^1.7.0":
   version "1.9.1"
@@ -77,10 +77,10 @@
   resolved "https://registry.yarnpkg.com/@huggingface/tokenizers/-/tokenizers-0.1.3.tgz#d1bb2b25375e550c826e4c7151d5f764a14a6a69"
   integrity sha512-8rF/RRT10u+kn7YuUbUg0OF30K8rjTc78aHpxT+qJ1uWSqxT1MHi8+9ltwYfkFYJzT/oS+qw3JVfHtNMGAdqyA==
 
-"@huggingface/transformers@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@huggingface/transformers/-/transformers-4.0.0.tgz#f218ceef7f3d7957bf5c0b168fdc1fba313f624a"
-  integrity sha512-7shdBRvtjIDP7UUhdi0b4CMRCD+QXvQIsEsxECWS9VEDEsxSQF9Ci+51mwy2OWI8vbsoic8e4dbR4eI8aZWxaw==
+"@huggingface/transformers@^4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@huggingface/transformers/-/transformers-4.0.1.tgz#06d17830bb07b21efcb58949567c66baacecab08"
+  integrity sha512-tAQYEy+cnW0ku/NxBSjFXCymi+DZa1/JkoGf4McxjzO36CZZIL/J4TF6X7i/tzs75yTjshUDgsvSz03s2xym2A==
   dependencies:
     "@huggingface/jinja" "^0.5.6"
     "@huggingface/tokenizers" "^0.1.3"
