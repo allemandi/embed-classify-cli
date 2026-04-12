@@ -2,9 +2,9 @@ const logger = require('../utils/logger');
 const fs = require('fs');
 const { processCsvForEmbedding } = require('../utils/csv');
 const { createEmbeddings } = require('../utils/embedding');
-const { sanitizeText } = require('../utils/sanitizer');
+const { batchSanitize } = require('../utils/sanitizer');
 
-const csvEmbedding = async (inputFile) => {
+const csvEmbedding = async (inputFile, outputFile = 'data/embedding.json') => {
   try {
     const csvHeaderStrings = {
       category: 'category',
@@ -25,10 +25,8 @@ const csvEmbedding = async (inputFile) => {
       comment: fileData.map((item) => item.comment),
     };
 
-    // Parallel processing of text sanitization
-    const cleanedComments = await Promise.all(
-      trainingData.comment.map((text) => Promise.resolve(sanitizeText(text)))
-    );
+    // Use batchSanitize for better performance and cleaner code
+    const cleanedComments = batchSanitize(trainingData.comment);
 
     const embeddings = await createEmbeddings(cleanedComments);
     const classifiedEmbeddings = embeddings.map((item, index) => ({
@@ -37,13 +35,15 @@ const csvEmbedding = async (inputFile) => {
     }));
 
     await fs.promises.writeFile(
-      'data/embedding.json',
+      outputFile,
       JSON.stringify(classifiedEmbeddings, null, 2)
     );
-    logger.info(`Successfully wrote to json`);
+    logger.info(`Successfully wrote to ${outputFile}`);
   } catch (error) {
     logger.error(`Failed to process CSV: ${error.message}`);
-    throw error;
+    throw new Error(`Failed to process CSV: ${error.message}`, {
+      cause: error,
+    });
   }
 };
 

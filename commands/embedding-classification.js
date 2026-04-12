@@ -1,21 +1,27 @@
 const { parseCsvToJson } = require('../utils/csv');
 const logger = require('../utils/logger');
 const fs = require('fs');
-const { rankSamplesBySimilarity } = require('../utils/embedding');
+const { createEmbeddings } = require('../utils/embedding');
 const { resolveBestCategory, calculateMetrics } = require('../utils/stats');
-const { sanitizeText, formatCSVRow } = require('../utils/sanitizer');
+const { batchSanitize, formatCSVRow } = require('../utils/sanitizer');
+const { shuffle, chunkArray } = require('../utils/helpers');
+const { findNearestNeighbors } = require('@allemandi/embed-utils');
 
 const embeddingClassification = async (
   inputFile,
   comparisonFile,
   outputFile,
   resultMetrics,
-  evaluateModel
+  evaluateModel,
+  config = {}
 ) => {
-  const weightedVotes = true;
-  const comparisonPercentage = 80;
-  const maxSamplesToSearch = 40;
-  const similarityThresholdPercent = 30;
+  const {
+    weightedVotes = true,
+    comparisonPercentage = 80,
+    maxSamplesToSearch = 40,
+    similarityThresholdPercent = 30,
+  } = config;
+
   const csvHeaderStrings = {
     category: 'category',
     comment: 'comment',
@@ -29,20 +35,14 @@ const embeddingClassification = async (
     jsonData = JSON.parse(jsonFile);
   } catch (err) {
     logger.error(`Failed to read or parse comparison file: ${err.message}`);
-    throw err;
+    throw new Error(`Failed to read or parse comparison file: ${err.message}`, {
+      cause: err,
+    });
   }
 
   logger.info(`Fetching ${jsonData.length} samples from comparison set`);
 
-  const shuffle = (array) => {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  };
-
-  const randomizedEmbeddingArray = shuffle([...jsonData]);
+  const randomizedEmbeddingArray = shuffle(jsonData);
   const originalEmbeddingLength = randomizedEmbeddingArray.length;
   const majorityIndex = Math.round(
     originalEmbeddingLength * (comparisonPercentage / 100)
@@ -53,26 +53,41 @@ const embeddingClassification = async (
     `Reserving ${comparisonPercentage}% (${comparisonData.length}) of original dataset to compare.`
   );
 
+  const similarityThreshold = similarityThresholdPercent / 100;
+
   if (evaluateModel) {
     const evaluateData = randomizedEmbeddingArray.slice(majorityIndex);
     logger.info(
       `Starting model evaluation preview using remaining ${100 - comparisonPercentage}% (${evaluateData.length}) of samples.`
     );
 
-    // Process evaluation in chunks to prevent memory issues
     const chunkSize = 100;
     const evaluationResults = [];
+    const chunks = chunkArray(evaluateData, chunkSize);
 
-    for (let i = 0; i < evaluateData.length; i += chunkSize) {
-      const chunk = evaluateData.slice(i, i + chunkSize);
+    for (const chunk of chunks) {
+      // Batch embed texts for the entire chunk
+      const texts = chunk.map((item) => item.text);
+      const embeddingsResponse = await createEmbeddings(texts);
+
       const chunkResults = await Promise.all(
-        chunk.map(async (item) => {
-          const searchResults = await rankSamplesBySimilarity(
-            item.text,
+        chunk.map(async (item, index) => {
+          const queryEmbedding = embeddingsResponse[index]?.embedding;
+          if (!queryEmbedding) {
+            return {
+              text: item.text,
+              category: '???',
+              confidence: 0,
+              actualCategory: item.category,
+            };
+          }
+
+          const searchResults = await findNearestNeighbors(
+            queryEmbedding,
             comparisonData,
-            maxSamplesToSearch,
-            similarityThresholdPercent
+            { topK: maxSamplesToSearch, threshold: similarityThreshold }
           );
+
           const predictedCategory =
             resolveBestCategory(searchResults, weightedVotes) || '???';
           const confidence = searchResults[0]?.similarityScore || 0;
@@ -120,21 +135,34 @@ const embeddingClassification = async (
 
   const inputData = await parseCsvToJson(inputFile);
 
-  // Process output in chunks
   const chunkSize = 100;
   const outputArr = [];
+  const inputChunks = chunkArray(inputData, chunkSize);
 
-  for (let i = 0; i < inputData.length; i += chunkSize) {
-    const chunk = inputData.slice(i, i + chunkSize);
+  for (const chunk of inputChunks) {
+    const sanitizedTexts = batchSanitize(chunk.map(({ comment }) => comment));
+    const embeddingsResponse = await createEmbeddings(sanitizedTexts);
+
     const chunkResults = await Promise.all(
-      chunk.map(async ({ comment }) => {
-        const sanitizedText = sanitizeText(comment);
-        const searchResults = await rankSamplesBySimilarity(
-          sanitizedText,
+      chunk.map(async (_, index) => {
+        const queryEmbedding = embeddingsResponse[index]?.embedding;
+        const sanitizedText = sanitizedTexts[index];
+
+        if (!queryEmbedding) {
+          return {
+            text: sanitizedText,
+            category: '???',
+            nearestCosineScore: 0,
+            similarSamplesCount: 0,
+          };
+        }
+
+        const searchResults = await findNearestNeighbors(
+          queryEmbedding,
           comparisonData,
-          maxSamplesToSearch,
-          similarityThresholdPercent
+          { topK: maxSamplesToSearch, threshold: similarityThreshold }
         );
+
         const predictedCategory =
           resolveBestCategory(searchResults, weightedVotes) || '???';
         const nearestCosineScore = searchResults[0]?.similarityScore || 0;
@@ -176,7 +204,9 @@ const embeddingClassification = async (
     logger.info(`Results have been written to ${outputFile}`);
   } catch (err) {
     logger.error(`Failed to write output file: ${err.message}`);
-    throw err;
+    throw new Error(`Failed to write output file: ${err.message}`, {
+      cause: err,
+    });
   }
 };
 
