@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@allemandi/embed-utils@^2.7.7":
+  version "2.7.7"
+  resolved "https://registry.yarnpkg.com/@allemandi/embed-utils/-/embed-utils-2.7.7.tgz#ce9ffe676e41eb88d3f33c763d9adf677ef3c1f2"
+  integrity sha512-/DFoABYaG+PAXppwuZ6MNPbugckZ/JiK5dGDsdPXhnNtePQ7kJ7aYGS8nTznJcZZyBNOMjWP6gAh3VlrGEXksg==
+
 "@emnapi/core@1.9.1":
   version "1.9.1"
   resolved "https://registry.yarnpkg.com/@emnapi/core/-/core-1.9.1.tgz#2143069c744ca2442074f8078462e51edd63c7bd"
