@@ -9,7 +9,11 @@ describe('CLI Integration - Full Pipeline', () => {
   const predictedFile = 'data/predicted_test.csv';
 
   it('csv-embedding command works', () => {
-    const result = spawnSync('node', ['index.js', 'csv-embedding', '-i', trainingFile, '-o', embeddingFile], { encoding: 'utf-8' });
+    const result = spawnSync(
+      'node',
+      ['index.js', 'csv-embedding', '-i', trainingFile, '-o', embeddingFile],
+      { encoding: 'utf-8' }
+    );
     expect(result.status).toBe(0);
     expect(fs.existsSync(embeddingFile)).toBe(true);
 
@@ -24,7 +28,18 @@ describe('CLI Integration - Full Pipeline', () => {
   it('embedding-classification command works', () => {
     const result = spawnSync(
       'node',
-      ['index.js', 'embedding-classification', '-i', unclassifiedFile, '-c', embeddingFile, '-o', predictedFile, '-r', '-e'],
+      [
+        'index.js',
+        'embedding-classification',
+        '-i',
+        unclassifiedFile,
+        '-c',
+        embeddingFile,
+        '-o',
+        predictedFile,
+        '-r',
+        '-e',
+      ],
       { encoding: 'utf-8' }
     );
 

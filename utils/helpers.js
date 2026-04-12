@@ -75,8 +75,10 @@ const helpers = {
       const actualCat = actuals[i]?.category || 'unknown';
 
       metrics.totalConfidence += p.confidence || 0;
-      if (!metrics.categories[predCat]) metrics.categories[predCat] = { pred: 0, correct: 0, actual: 0 };
-      if (!metrics.categories[actualCat]) metrics.categories[actualCat] = { pred: 0, correct: 0, actual: 0 };
+      if (!metrics.categories[predCat])
+        metrics.categories[predCat] = { pred: 0, correct: 0, actual: 0 };
+      if (!metrics.categories[actualCat])
+        metrics.categories[actualCat] = { pred: 0, correct: 0, actual: 0 };
 
       metrics.categories[predCat].pred++;
       metrics.categories[actualCat].actual++;
