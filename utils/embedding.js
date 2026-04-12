@@ -1,6 +1,5 @@
 const { pipeline } = require('@huggingface/transformers');
 const logger = require('./logger');
-const { findNearestNeighbors } = require('@allemandi/embed-utils');
 
 const createEmbeddings = async (textArr) => {
   if (!Array.isArray(textArr) || textArr.length === 0) {

@@ -3,7 +3,7 @@ const logger = require('../utils/logger');
 const fs = require('fs');
 const { createEmbeddings } = require('../utils/embedding');
 const { resolveBestCategory, calculateMetrics } = require('../utils/stats');
-const { sanitizeText, formatCSVRow } = require('../utils/sanitizer');
+const { batchSanitize, formatCSVRow } = require('../utils/sanitizer');
 const { shuffle, chunkArray } = require('../utils/helpers');
 const { findNearestNeighbors } = require('@allemandi/embed-utils');
 
@@ -140,7 +140,7 @@ const embeddingClassification = async (
   const inputChunks = chunkArray(inputData, chunkSize);
 
   for (const chunk of inputChunks) {
-    const sanitizedTexts = chunk.map(({ comment }) => sanitizeText(comment));
+    const sanitizedTexts = batchSanitize(chunk.map(({ comment }) => comment));
     const embeddingsResponse = await createEmbeddings(sanitizedTexts);
 
     const chunkResults = await Promise.all(

@@ -51,14 +51,14 @@ node index.js embedding-classification -i ./data/unclassified.csv -c ./data/embe
 
 Tune classification behavior in `embedding-classification.js` with these params:
 
-- `--weightedVotes`  
-  Use averaged similarity scores
-- `--comparisonPercentage`  
-  % of top similar samples to compare (0–100)
-- `--maxSamplesToSearch`  
-  Limit how many samples are compared
-- `--similarityThresholdPercent`  
-  Minimum cosine similarity to include in comparison
+- `--weightedVotes` (or `--no-weightedVotes`)
+  Use averaged similarity scores (default: true)
+- `--comparisonPercentage <number>`
+  Percentage of comparison dataset to use (default: 80)
+- `--maxSamplesToSearch <number>`
+  Maximum number of similar samples to search (default: 40)
+- `--similarityThresholdPercent <number>`
+  Minimum similarity threshold percentage (default: 30)
 
 ## 🔗 Related Projects
 

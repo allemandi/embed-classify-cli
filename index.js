@@ -37,7 +37,7 @@ program
   )
   .option('-r, --resultMetrics', 'Include to add metrics to outputFile')
   .option(
-    '-e, --evaluteModel',
+    '-e, --evaluateModel',
     'Include to run evaluation for comparison dataset'
   )
   .option('--no-weightedVotes', 'Disable weighted voting for classification')
@@ -71,7 +71,7 @@ program
       cmdObj.comparisonFile,
       cmdObj.outputFile,
       cmdObj.resultMetrics,
-      cmdObj.evaluteModel,
+      cmdObj.evaluateModel,
       config
     );
   });
