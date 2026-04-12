@@ -11,8 +11,13 @@ program
     '-i, --inputFile <filepath>',
     'File path to the CSV for creating embeddings'
   )
+  .option(
+    '-o, --outputFile <filepath>',
+    'File path for the output embedding JSON',
+    'data/embedding.json'
+  )
   .action(async (cmdObj) => {
-    await csvEmbedding(cmdObj.inputFile);
+    await csvEmbedding(cmdObj.inputFile, cmdObj.outputFile);
   });
 
 program
@@ -35,13 +40,39 @@ program
     '-e, --evaluteModel',
     'Include to run evaluation for comparison dataset'
   )
+  .option('--no-weightedVotes', 'Disable weighted voting for classification')
+  .option(
+    '--comparisonPercentage <number>',
+    'Percentage of comparison dataset to use',
+    (val) => parseInt(val, 10),
+    80
+  )
+  .option(
+    '--maxSamplesToSearch <number>',
+    'Maximum number of similar samples to search',
+    (val) => parseInt(val, 10),
+    40
+  )
+  .option(
+    '--similarityThresholdPercent <number>',
+    'Minimum similarity threshold percentage',
+    (val) => parseInt(val, 10),
+    30
+  )
   .action(async (cmdObj) => {
+    const config = {
+      weightedVotes: cmdObj.weightedVotes,
+      comparisonPercentage: cmdObj.comparisonPercentage,
+      maxSamplesToSearch: cmdObj.maxSamplesToSearch,
+      similarityThresholdPercent: cmdObj.similarityThresholdPercent,
+    };
     await embeddingClassification(
       cmdObj.inputFile,
       cmdObj.comparisonFile,
       cmdObj.outputFile,
       cmdObj.resultMetrics,
-      cmdObj.evaluteModel
+      cmdObj.evaluteModel,
+      config
     );
   });
 

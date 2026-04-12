@@ -44,40 +44,6 @@ const createEmbeddings = async (textArr) => {
   }
 };
 
-const rankSamplesBySimilarity = async (
-  searchQuery,
-  samples,
-  maxResults = 10,
-  similarityThresholdPercent = 40
-) => {
-  try {
-    const queryArray = Array.isArray(searchQuery) ? searchQuery : [searchQuery];
-    if (!queryArray.every((query) => typeof query === 'string')) {
-      throw new Error('Search query must be a string or array of strings');
-    }
-
-    const searchQueryResponse = await createEmbeddings(queryArray);
-    if (!searchQueryResponse?.[0]?.embedding) {
-      logger.error('No valid embedding generated for search query');
-      return [];
-    }
-    const queryEmbedding = searchQueryResponse[0].embedding;
-    const similarityThreshold = similarityThresholdPercent / 100;
-
-    const nearestNeighbors = await findNearestNeighbors(
-      queryEmbedding,
-      samples,
-      { topK: maxResults, threshold: similarityThreshold }
-    );
-
-    return nearestNeighbors;
-  } catch (error) {
-    logger.error('Error ranking samples by similarity:', error);
-    return [];
-  }
-};
-
 module.exports = {
   createEmbeddings,
-  rankSamplesBySimilarity,
 };
