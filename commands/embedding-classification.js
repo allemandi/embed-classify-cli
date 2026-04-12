@@ -1,21 +1,26 @@
 const { parseCsvToJson } = require('../utils/csv');
 const logger = require('../utils/logger');
 const fs = require('fs');
-const { rankSamplesBySimilarity } = require('../utils/embedding');
+const { createEmbeddings } = require('../utils/embedding');
 const { resolveBestCategory, calculateMetrics } = require('../utils/stats');
 const { sanitizeText, formatCSVRow } = require('../utils/sanitizer');
+const { shuffle } = require('../utils/array');
+const { findNearestNeighbors } = require('@allemandi/embed-utils');
 
 const embeddingClassification = async (
   inputFile,
   comparisonFile,
   outputFile,
-  resultMetrics,
-  evaluateModel
+  options = {}
 ) => {
-  const weightedVotes = true;
-  const comparisonPercentage = 80;
-  const maxSamplesToSearch = 40;
-  const similarityThresholdPercent = 30;
+  const {
+    resultMetrics = false,
+    evaluateModel = false,
+    weightedVotes = true,
+    comparisonPercentage = 80,
+    maxSamplesToSearch = 40,
+    similarityThresholdPercent = 30,
+  } = options;
   const csvHeaderStrings = {
     category: 'category',
     comment: 'comment',
@@ -34,15 +39,7 @@ const embeddingClassification = async (
 
   logger.info(`Fetching ${jsonData.length} samples from comparison set`);
 
-  const shuffle = (array) => {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  };
-
-  const randomizedEmbeddingArray = shuffle([...jsonData]);
+  const randomizedEmbeddingArray = shuffle(jsonData);
   const originalEmbeddingLength = randomizedEmbeddingArray.length;
   const majorityIndex = Math.round(
     originalEmbeddingLength * (comparisonPercentage / 100)
@@ -52,6 +49,8 @@ const embeddingClassification = async (
   logger.info(
     `Reserving ${comparisonPercentage}% (${comparisonData.length}) of original dataset to compare.`
   );
+
+  const similarityThreshold = similarityThresholdPercent / 100;
 
   if (evaluateModel) {
     const evaluateData = randomizedEmbeddingArray.slice(majorityIndex);
@@ -64,14 +63,16 @@ const embeddingClassification = async (
     const evaluationResults = [];
 
     for (let i = 0; i < evaluateData.length; i += chunkSize) {
+      logger.info(
+        `Evaluating batch ${Math.floor(i / chunkSize) + 1} of ${Math.ceil(evaluateData.length / chunkSize)}`
+      );
       const chunk = evaluateData.slice(i, i + chunkSize);
       const chunkResults = await Promise.all(
         chunk.map(async (item) => {
-          const searchResults = await rankSamplesBySimilarity(
-            item.text,
+          const searchResults = await findNearestNeighbors(
+            item.embedding,
             comparisonData,
-            maxSamplesToSearch,
-            similarityThresholdPercent
+            { topK: maxSamplesToSearch, threshold: similarityThreshold }
           );
           const predictedCategory =
             resolveBestCategory(searchResults, weightedVotes) || '???';
@@ -120,27 +121,33 @@ const embeddingClassification = async (
 
   const inputData = await parseCsvToJson(inputFile);
 
-  // Process output in chunks
+  // Process output in chunks with optimized embedding creation
   const chunkSize = 100;
   const outputArr = [];
 
   for (let i = 0; i < inputData.length; i += chunkSize) {
+    logger.info(
+      `Classifying batch ${Math.floor(i / chunkSize) + 1} of ${Math.ceil(inputData.length / chunkSize)}`
+    );
     const chunk = inputData.slice(i, i + chunkSize);
+
+    const sanitizedTexts = chunk.map((item) => sanitizeText(item.comment));
+    const chunkEmbeddings = await createEmbeddings(sanitizedTexts);
+
     const chunkResults = await Promise.all(
-      chunk.map(async ({ comment }) => {
-        const sanitizedText = sanitizeText(comment);
-        const searchResults = await rankSamplesBySimilarity(
-          sanitizedText,
+      chunkEmbeddings.map(async (item) => {
+        const searchResults = await findNearestNeighbors(
+          item.embedding,
           comparisonData,
-          maxSamplesToSearch,
-          similarityThresholdPercent
+          { topK: maxSamplesToSearch, threshold: similarityThreshold }
         );
+
         const predictedCategory =
           resolveBestCategory(searchResults, weightedVotes) || '???';
         const nearestCosineScore = searchResults[0]?.similarityScore || 0;
 
         return {
-          text: sanitizedText,
+          text: item.text,
           category: predictedCategory,
           nearestCosineScore,
           similarSamplesCount: searchResults.length,

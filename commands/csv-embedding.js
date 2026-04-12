@@ -4,7 +4,9 @@ const { processCsvForEmbedding } = require('../utils/csv');
 const { createEmbeddings } = require('../utils/embedding');
 const { sanitizeText } = require('../utils/sanitizer');
 
-const csvEmbedding = async (inputFile) => {
+const path = require('path');
+
+const csvEmbedding = async (inputFile, outputFile = 'data/embedding.json') => {
   try {
     const csvHeaderStrings = {
       category: 'category',
@@ -19,28 +21,34 @@ const csvEmbedding = async (inputFile) => {
       commentHeader
     );
 
-    // More efficient data structuring
+    // More efficient data structuring and sanitization in one pass
     const trainingData = {
-      category: fileData.map((item) => item.category),
-      comment: fileData.map((item) => item.comment),
+      categories: [],
+      cleanedComments: [],
     };
 
-    // Parallel processing of text sanitization
-    const cleanedComments = await Promise.all(
-      trainingData.comment.map((text) => Promise.resolve(sanitizeText(text)))
-    );
+    for (const item of fileData) {
+      trainingData.categories.push(item.category);
+      trainingData.cleanedComments.push(sanitizeText(item.comment));
+    }
 
-    const embeddings = await createEmbeddings(cleanedComments);
+    const embeddings = await createEmbeddings(trainingData.cleanedComments);
     const classifiedEmbeddings = embeddings.map((item, index) => ({
-      category: trainingData.category[index],
+      category: trainingData.categories[index],
       ...item,
     }));
 
+    // Ensure directory exists
+    const outputDir = path.dirname(outputFile);
+    if (!fs.existsSync(outputDir)) {
+      await fs.promises.mkdir(outputDir, { recursive: true });
+    }
+
     await fs.promises.writeFile(
-      'data/embedding.json',
+      outputFile,
       JSON.stringify(classifiedEmbeddings, null, 2)
     );
-    logger.info(`Successfully wrote to json`);
+    logger.info(`Successfully wrote to ${outputFile}`);
   } catch (error) {
     logger.error(`Failed to process CSV: ${error.message}`);
     throw error;
