@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@allemandi/embed-utils": "^2.7.7",
-    "@huggingface/transformers": "^4.1.0",
+    "@huggingface/transformers": "^4.2.0",
     "commander": "^14.0.3",
     "csvtojson": "^2.0.14",
     "pino": "^10.3.1",
